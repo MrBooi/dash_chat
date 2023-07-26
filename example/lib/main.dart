@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:dash_chat/dash_chat.dart';
 
 void main() async {
@@ -120,8 +119,12 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             } else {
               List<DocumentSnapshot> items = snapshot.data!.docs;
-              var messages =
-                  items.map((i) => ChatMessage.fromJson(i.data()!)).toList();
+              var messages = items
+                  .map(
+                    (i) => ChatMessage.fromJson(
+                        i.exists ? i.data() as Map<dynamic, dynamic> : {}),
+                  )
+                  .toList();
               return DashChat(
                 key: _chatViewKey,
                 inverted: false,
@@ -190,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.photo),
                     onPressed: () async {
                       final picker = ImagePicker();
-                      PickedFile? result = await picker.getImage(
+                      XFile? result = await picker.pickImage(
                         source: ImageSource.gallery,
                         imageQuality: 80,
                         maxHeight: 400,
